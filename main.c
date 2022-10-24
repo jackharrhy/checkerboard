@@ -1,20 +1,53 @@
 #include "SDL2/SDL.h"
 
+SDL_Window *window;
+SDL_Renderer *renderer;
+
 int width = 512, height = 512, frame_rate = 60;
+
+SDL_Rect box;
+
+void draw_checkerboard(int size)
+{
+  SDL_SetRenderDrawColor(renderer, 255, 0, 77, 0);
+
+  int length = width / size;
+
+  int drew_prev;
+
+  for (int x = 0; x < size; ++x)
+  {
+    int drew_prev = x % 2;
+
+    for (int y = 0; y < size; ++y)
+    {
+      if (drew_prev == 1)
+      {
+        drew_prev = 0;
+        continue;
+      }
+
+      drew_prev = 1;
+
+      box.x = x * length;
+      box.y = y * length;
+      box.w = length;
+      box.h = length;
+
+      SDL_RenderFillRect(renderer, &box);
+    }
+  }
+}
 
 int main(int argc, char *argv[])
 {
   SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-  SDL_Window *window;
-  SDL_Renderer *renderer;
   SDL_Event event;
 
   SDL_CreateWindowAndRenderer(width, height, SDL_WINDOW_RESIZABLE, &window, &renderer);
 
   SDL_bool quit = SDL_FALSE;
-
-  SDL_Rect box;
 
   while (!quit)
   {
@@ -33,21 +66,7 @@ int main(int argc, char *argv[])
     SDL_SetRenderDrawColor(renderer, 255, 204, 170, 0);
     SDL_RenderClear(renderer);
 
-    SDL_SetRenderDrawColor(renderer, 255, 0, 77, 0);
-
-    box.x = 0;
-    box.y = 0;
-    box.w = width / 2;
-    box.h = height / 2;
-
-    SDL_RenderFillRect(renderer, &box);
-
-    box.x = width / 2;
-    box.y = height / 2;
-    box.w = width / 2;
-    box.h = height / 2;
-
-    SDL_RenderFillRect(renderer, &box);
+    draw_checkerboard(32);
 
     SDL_RenderPresent(renderer);
 
